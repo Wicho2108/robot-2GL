@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Robótico 2GDL - Control Avanzado</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles2.css">
+</head>
+<body>
+    <!-- Encabezado minimalista -->
+    <header class="app-header">
+        <div class="header-content">
+            <h1 class="main-title">Sistema Robótico 2GDL</h1>
+            <p class="app-description">Plataforma de Control y Simulación</p>
+        </div>
+    </header>
+    
+    <!-- Contenedor principal con nueva estructura -->
+    <main class="app-main">
+        <!-- Panel de control lateral IZQUIERDO -->
+        <aside class="control-panel left-panel">
+            <div class="panel-section">
+                <h2 class="section-title">
+                    <span class="icon">🎮</span>
+                    Configuración de Movimiento
+                </h2>
+                
+                <div class="input-container">
+                    <div class="coordinate-input">
+                        <label for="targetX" class="input-label">Posición en X (metros)</label>
+                        <input type="number" id="targetX" class="coordinate-field" 
+                               value="0.14" step="0.01" min="-0.3" max="0.3">
+                    </div>
+                    
+                    <div class="coordinate-input">
+                        <label for="targetY" class="input-label">Posición en Y (metros)</label>
+                        <input type="number" id="targetY" class="coordinate-field" 
+                               value="0.14" step="0.01" min="-0.3" max="0.3">
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="executeMove" class="action-btn primary-action">
+                        <span class="btn-icon">▶️</span>
+                        Ejecutar Movimiento
+                    </button>
+                    <button id="resetPosition" class="action-btn secondary-action">
+                        <span class="btn-icon">🔄</span>
+                        Restablecer Posición
+                    </button>
+                </div>
+                
+                <div id="systemAlert" class="alert-box"></div>
+            </div>
+            
+            <!-- Panel de información del sistema -->
+            <div class="panel-section">
+                <h2 class="section-title">
+                    <span class="icon">📋</span>
+                    Datos del Sistema
+                </h2>
+                
+                <div class="system-info">
+                    <div class="info-item">
+                        <span class="info-label">Eslabón 1:</span>
+                        <span class="info-value">0.12 m</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Eslabón 2:</span>
+                        <span class="info-value">0.12 m</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Extensión Final:</span>
+                        <span class="info-value">0.02 m</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Ángulo Articulación 1:</span>
+                        <span id="joint1Angle" class="info-value highlight">90.0°</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Ángulo Articulación 2:</span>
+                        <span id="joint2Angle" class="info-value highlight">0.0°</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Sección de visualización principal CENTRO -->
+        <section class="visualization-section">
+            <div class="simulation-container">
+                <div class="canvas-wrapper">
+                    <canvas id="robotCanvas" width="600" height="500"></canvas>
+                    <div class="position-indicator">
+                        <span class="position-label">Coordenadas actuales:</span>
+                        <span id="currentPos" class="position-value">x: 0.14, y: 0.14</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Espacio derecho vacío o para futuras expansiones -->
+        <aside class="right-panel">
+            <!-- Puedes agregar más controles aquí si lo necesitas -->
+        </aside>
+    </main>
+    
+    <!-- Sección de análisis de trayectorias -->
+    <section class="analysis-section">
+        <div class="analysis-header">
+            <h2 class="section-title">
+                <span class="icon">📈</span>
+                Análisis de Trayectorias
+            </h2>
+        </div>
+        
+        <div class="charts-grid">
+            <div class="chart-panel">
+                <div class="chart-header">
+                    <h3>Variación Angular - Articulación 1</h3>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="joint1Chart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-panel">
+                <div class="chart-header">
+                    <h3>Variación Angular - Articulación 2</h3>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="joint2Chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contenedor de Información Inferior -->
+    <section class="info-container">
+        <div class="info-content">
+            <h2 class="info-title">
+                <span class="icon">ℹ️</span>
+                Información del Proyecto
+            </h2>
+            
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3 class="card-title">Descripción del Sistema</h3>
+                    <div class="card-content">
+                        <p>Sistema robótico planar de 2 grados de libertad (2GDL) que simula el comportamiento 
+                        de un brazo robótico con cinemática directa e inversa, implementado para fines educativos 
+                        y de investigación en robótica.</p>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h3 class="card-title">Características Técnicas</h3>
+                    <div class="card-content">
+                        <ul class="features-list">
+                            <li>✅ Cinemática inversa con validación de espacio de trabajo</li>
+                            <li>✅ Generación de trayectorias suaves con polinomios de 5º grado</li>
+                            <li>✅ Visualización en tiempo real del robot y su trayectoria</li>
+                            <li>✅ Gráficas de evolución angular de las articulaciones</li>
+                            <li>✅ Interfaz responsive y moderna con diseño adaptable</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h3 class="card-title">Especificaciones</h3>
+                    <div class="card-content">
+                        <div class="specs-grid">
+                            <div class="spec-item">
+                                <span class="spec-label">Tipo:</span>
+                                <span class="spec-value">Robot Planar 2GDL</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Articulaciones:</span>
+                                <span class="spec-value">2 rotacionales</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Espacio de trabajo:</span>
+                                <span class="spec-value">Anular (0.24m radio max)</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Coordenadas:</span>
+                                <span class="spec-value">Cartesianas (x, y)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h3 class="card-title">Datos Importantes</h3>
+                    <div class="card-content">
+                        <div class="important-data">
+                            <div class="data-item critical">
+                                <span class="data-icon">⚠️</span>
+                                <div class="data-content">
+                                    <strong>Espacio de Trabajo Limitado</strong>
+                                    <p>El robot solo puede alcanzar puntos dentro del área anular definida por los eslabones</p>
+                                </div>
+                            </div>
+                            
+                            <div class="data-item warning">
+                                <span class="data-icon">📏</span>
+                                <div class="data-content">
+                                    <strong>Precisión de Movimiento</strong>
+                                    <p>La precisión depende de la resolución de la cinemática inversa y las limitaciones numéricas</p>
+                                </div>
+                            </div>
+                            
+                            <div class="data-item info">
+                                <span class="data-icon">⚡</span>
+                                <div class="data-content">
+                                    <strong>Configuraciones Múltiples</strong>
+                                    <p>Para cada punto cartesiano existen dos soluciones articulares posibles (codo arriba/abajo)</p>
+                                </div>
+                            </div>
+                            
+                            <div class="data-item success">
+                                <span class="data-icon">🔄</span>
+                                <div class="data-content">
+                                    <strong>Trayectorias Suaves</strong>
+                                    <p>Las trayectorias utilizan polinomios de 5º grado para transiciones suaves sin discontinuidades</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <p>Luis Ricardo Vega Hernández</p>
+    <script src="robot.js"></script>
+</body>
+</html>
